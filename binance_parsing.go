@@ -2,40 +2,6 @@ package main
 
 import "github.com/tebeka/selenium"
 
-func xpathForeach(driver selenium.WebDriver, xpath string, handler func(selenium.WebElement) error) (err error) {
-	elements, err := driver.FindElements(selenium.ByXPATH, xpath)
-	if err != nil {
-		return
-	}
-	for _, e := range elements {
-		if err = handler(e); err != nil {
-			return
-		}
-	}
-	return
-}
-func scrapElementTexts(driver selenium.WebDriver, xpath string) (res []string, err error) {
-	elements, err := driver.FindElements(selenium.ByXPATH, xpath)
-	if err != nil {
-		return
-	}
-	for _, e := range elements {
-		var text string
-		findElements, _ := e.FindElements(selenium.ByXPATH, "*")
-		for er, el := range findElements {
-			s, _ := el.Text()
-			println(s)
-			println(er)
-		}
-		text, err = e.Text()
-		if err != nil {
-			return
-		}
-		res = append(res, text)
-	}
-	return
-}
-
 func prepareBinancePage(driver selenium.WebDriver) (err error) {
 	err = xpathForeach(driver, "//input[@placeholder='Enter amount']", func(e selenium.WebElement) (err error) {
 		return e.SendKeys("50000")
