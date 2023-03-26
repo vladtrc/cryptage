@@ -15,7 +15,7 @@ var config = Config{
 	port:             "9090",
 	currencies: []string{
 		"USDT",
-		//"BTC",
-		//"ETH",
+		"BTC",
+		"ETH",
 	},
 }
