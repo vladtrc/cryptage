@@ -9,7 +9,7 @@ import (
 )
 
 var ordersByPageHandle cmap.ConcurrentMap[string, Orders]
-var providerByPageHandle map[string]string
+var handlesByProvider map[string][]string
 
 func Parse(driver selenium.WebDriver, pages Pages) {
 	for {
@@ -30,7 +30,7 @@ func Parse(driver selenium.WebDriver, pages Pages) {
 
 func main() {
 	ordersByPageHandle = cmap.New[Orders]()
-	providerByPageHandle = make(map[string]string)
+	handlesByProvider = make(map[string][]string)
 	service, driver := initSelenium()
 	defer func(service *selenium.Service) {
 		err := service.Stop()
@@ -38,21 +38,16 @@ func main() {
 			panic(err) // its prob dangerous but whatever
 		}
 	}(service)
-	currencies := []string{
-		"USDT",
-		"BTC",
-		"ETH",
-	}
 	pages, err := initProviders(driver, Providers{
-		Binance{currencies: currencies},
-		Garantex{currencies: currencies},
+		Binance{currencies: config.currencies},
+		Garantex{currencies: config.currencies},
 	})
 	if err != nil {
 		panic(err)
 	}
 	go Parse(driver, pages)
 	http.HandleFunc("/", HandleFunc)
-	if err := http.ListenAndServe(":"+"8080", nil); err != nil {
+	if err := http.ListenAndServe(":"+config.port, nil); err != nil {
 		fmt.Printf("Can't serve err: %v", err)
 		return
 	}

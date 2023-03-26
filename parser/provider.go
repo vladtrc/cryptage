@@ -18,7 +18,7 @@ func initProviders(driver selenium.WebDriver, providers Providers) (pages Pages,
 			return
 		}
 		for _, page := range providerPages {
-			providerByPageHandle[page.handle] = provider.name()
+			handlesByProvider[provider.name()] = append(handlesByProvider[provider.name()], page.handle)
 		}
 		pages = append(pages, providerPages...)
 	}
