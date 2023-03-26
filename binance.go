@@ -9,6 +9,10 @@ type Binance struct {
 	currencies []string
 }
 
+func (b Binance) name() string {
+	return "Binance"
+}
+
 type OrderTypeCurrency struct {
 	OrderType
 	string

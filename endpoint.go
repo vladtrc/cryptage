@@ -18,7 +18,7 @@ func HandleFunc(w http.ResponseWriter, r *http.Request) {
 	orders := map[string]map[string]map[OrderType]OrdersPageWeb{}
 	for entry := range ordersByPageHandle.IterBuffered() {
 		for _, order := range entry.Val {
-			provider := "Binance"
+			provider := providerByPageHandle[entry.Key]
 			if orders[provider] == nil {
 				orders[provider] = make(map[string]map[OrderType]OrdersPageWeb)
 			}

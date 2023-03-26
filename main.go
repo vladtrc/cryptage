@@ -9,6 +9,7 @@ import (
 )
 
 var ordersByPageHandle cmap.ConcurrentMap[string, Orders]
+var providerByPageHandle map[string]string
 
 func Parse(driver selenium.WebDriver, pages Pages) {
 	for {
@@ -29,6 +30,7 @@ func Parse(driver selenium.WebDriver, pages Pages) {
 
 func main() {
 	ordersByPageHandle = cmap.New[Orders]()
+	providerByPageHandle = make(map[string]string)
 	service, driver := initSelenium()
 	defer func(service *selenium.Service) {
 		err := service.Stop()
@@ -38,11 +40,11 @@ func main() {
 	}(service)
 	currencies := []string{
 		"USDT",
-		//"BTC",
-		//"ETH",
+		"BTC",
+		"ETH",
 	}
 	pages, err := initProviders(driver, Providers{
-		//Binance{currencies: currencies},
+		Binance{currencies: currencies},
 		Garantex{currencies: currencies},
 	})
 	if err != nil {
