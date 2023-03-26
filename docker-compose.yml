@@ -1,0 +1,10 @@
+version: '2'
+services:
+  parser:
+    container_name: parser
+    build:
+      context: parser
+      dockerfile: Dockerfile
+    ports:
+      - "2112:2112"
+

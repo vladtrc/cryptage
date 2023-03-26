@@ -9,7 +9,7 @@ type Config struct {
 }
 
 var config = Config{
-	chromeDriverPath: "driver/chromedriver",
+	chromeDriverPath: "chromedriver",
 	reloadSeconds:    10,
 	headless:         true,
 	port:             "9090",
