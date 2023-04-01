@@ -70,9 +70,7 @@ func parseBinanceP2PTrade(driver selenium.WebDriver) (res Orders, err error) {
 		return
 	}
 	for i, price := range prices {
-		order := Order{
-			price: price,
-		}
+		order := Order{price: price, timestamp: time.Now()}
 		if len(advertisers) > i {
 			order.advertiser = advertisers[i]
 		}

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/tebeka/selenium"
+	"time"
 )
 
 func GarantexParsePage(driver selenium.WebDriver, orderType OrderType, currency string) (res Orders, err error) {
@@ -33,6 +34,7 @@ func GarantexParsePage(driver selenium.WebDriver, orderType OrderType, currency 
 			price:     price,
 			_currency: currency,
 			_type:     orderType,
+			timestamp: time.Now(),
 		}
 		if len(volumes) > i {
 			order.available = volumes[i]

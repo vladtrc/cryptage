@@ -44,7 +44,7 @@ func main() {
 		panic(err)
 	}
 	go Parse(driver, pages)
-	http.HandleFunc("/", HandleFunc)
+	http.HandleFunc("/", RouteFunc)
 	if err := http.ListenAndServe(":"+config.port, nil); err != nil {
 		fmt.Printf("Can't serve err: %v", err)
 		return

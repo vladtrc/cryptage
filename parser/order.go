@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 type OrderType string
 
 const (
@@ -13,6 +15,7 @@ type Order struct {
 	available  string
 	payment    string
 	commission string
+	timestamp  time.Time
 	_currency  string
 	_type      OrderType
 }
