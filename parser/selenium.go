@@ -10,6 +10,12 @@ import (
 )
 
 func getRemote() (driver selenium.WebDriver, err error) {
+	if config.localChromeDriver {
+		_, err := selenium.NewChromeDriverService("chromedriver", 4444)
+		if err != nil {
+			panic(err)
+		}
+	}
 	sleep := time.Duration(1) * time.Second
 	attempts := 5
 	for i := 0; i < attempts; i++ {

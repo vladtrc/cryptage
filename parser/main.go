@@ -15,18 +15,18 @@ var handlesByProvider map[string][]string
 func Parse(driver selenium.WebDriver, pages Pages) {
 	for {
 		for _, page := range pages {
+			time.Sleep(time.Duration(5) * time.Second)
 			if err := driver.SwitchWindow(page.handle); err != nil {
 				panic(err)
 			}
 			var orders Orders
 			var err error
 			if orders, err = page.parse(driver); err != nil {
-				println(err) // todo log
+				log.Printf("could not parse page:%s", err)
 			}
-			log.Println("Parsed all pages")
 			ordersByPageHandle.Set(page.handle, orders)
 		}
-		time.Sleep(time.Duration(3) * time.Second)
+		log.Println("Parsed all pages")
 	}
 }
 

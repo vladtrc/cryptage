@@ -1,16 +1,38 @@
 package main
 
-import "github.com/tebeka/selenium"
+import (
+	"github.com/tebeka/selenium"
+	"log"
+	"time"
+)
 
-func prepareBinancePage(driver selenium.WebDriver) (err error) {
-	err = xpathForeach(driver, "//input[@placeholder='Enter amount']", func(e selenium.WebElement) (err error) {
-		return e.SendKeys("50000")
-	})
-	if err != nil {
+type ByValueCondition struct {
+	by       string
+	value    string
+	expected bool // are we waiting for a button to be visible (true) or otherwise (false)
+}
+
+func (c ByValueCondition) checkButtonVisibility(driver selenium.WebDriver) (res bool, err error) {
+	we, _ := driver.FindElement(c.by, c.value)
+	if we == nil {
 		return
 	}
-	err = xpathForeach(driver, "//button[text()='Accept All Cookies']", func(e selenium.WebElement) (err error) {
-		return e.SendKeys(selenium.EnterKey)
+	res, _ = we.IsDisplayed()
+	if !c.expected {
+		res = !res
+	}
+	return
+}
+func prepareBinancePage(driver selenium.WebDriver) (err error) {
+	acceptAllCookiesXPath := "//button[text()='Accept All Cookies']"
+	if err = driver.WaitWithTimeout(ByValueCondition{by: selenium.ByXPATH, value: acceptAllCookiesXPath, expected: true}.checkButtonVisibility, time.Duration(10)*time.Second); err != nil {
+		log.Printf("could not wait until the accept cookies button: %s", err)
+	}
+	err = xpathForeach(driver, acceptAllCookiesXPath, func(e selenium.WebElement) (err error) {
+		return e.Click()
+	})
+	err = xpathForeach(driver, "//input[@placeholder='Enter amount']", func(e selenium.WebElement) (err error) {
+		return e.SendKeys("50000" + selenium.ReturnKey)
 	})
 	if err != nil {
 		return
