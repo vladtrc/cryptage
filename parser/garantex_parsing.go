@@ -8,7 +8,7 @@ import (
 
 func GarantexParsePage(driver selenium.WebDriver, orderType OrderType, currency string) (res Orders, err error) {
 	var template string
-	if orderType == Sell {
+	if orderType == Buy {
 		template = "(//div[contains(text(), 'Buy %s')])[last()]/..//td[contains(@class, '%s')]"
 	} else {
 		template = "(//div[contains(text(), 'Sell %s')])[last()]/..//td[contains(@class, '%s')]"

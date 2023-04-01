@@ -31,8 +31,8 @@ func (o OrderTypeCurrency) BinanceParseOrders(driver selenium.WebDriver) (res Or
 }
 func (b Binance) init(driver selenium.WebDriver) (res Pages, err error) {
 	orderTypeTemplates := map[OrderType]string{
-		Sell: "https://p2p.binance.com/en/trade/all-payments/%s?fiat=RUB",
-		Buy:  "https://p2p.binance.com/en/trade/sell/%s?fiat=RUB&payment=ALL",
+		Sell: "https://p2p.binance.com/en/trade/sell/%s?fiat=RUB&payment=ALL",
+		Buy:  "https://p2p.binance.com/en/trade/all-payments/%s?fiat=RUB",
 	}
 	for _, orderType := range []OrderType{Sell, Buy} {
 		for _, currency := range b.currencies {
