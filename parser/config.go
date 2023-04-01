@@ -1,18 +1,24 @@
 package main
 
 type Config struct {
-	chromeDriverPath string
-	reloadSeconds    int
-	headless         bool
-	port             string
-	currencies       []string
+	chromeUrlPrefix string
+	chromeArgs      []string
+	reloadSeconds   int
+	port            string
+	currencies      []string
 }
 
 var config = Config{
-	chromeDriverPath: "chromedriver",
-	reloadSeconds:    10,
-	headless:         true,
-	port:             "9090",
+	chromeUrlPrefix: "http://chrome:4444/wd/hub",
+	chromeArgs: []string{
+		"window-size=1920x1080",
+		"--no-sandbox",
+		"--disable-dev-shm-usage",
+		"disable-gpu",
+		"--headless",
+	},
+	reloadSeconds: 10,
+	port:          "9090",
 	currencies: []string{
 		"USDT",
 		"BTC",

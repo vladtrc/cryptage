@@ -1,4 +1,4 @@
-version: '2'
+version: '3.8'
 services:
   parser:
     container_name: parser
@@ -6,5 +6,20 @@ services:
       context: parser
       dockerfile: Dockerfile
     ports:
-      - "2112:2112"
+      - "9090:9090"
+    networks:
+      - web
+    depends_on:
+      - chrome
+  chrome:
+    image: selenium/standalone-chrome:latest
+    hostname: chrome
+    networks:
+      - web
+    privileged: true
+    shm_size: 2g
 
+
+networks:
+  web:
+    driver:  bridge

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/tebeka/selenium"
+	"log"
 )
 
 type Provider interface {
@@ -21,6 +23,7 @@ func initProviders(driver selenium.WebDriver, providers Providers) (pages Pages,
 			handlesByProvider[provider.name()] = append(handlesByProvider[provider.name()], page.handle)
 		}
 		pages = append(pages, providerPages...)
+		log.Println(fmt.Sprintf("Initialized provider %s", provider.name()))
 	}
 	return
 }

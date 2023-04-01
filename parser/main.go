@@ -4,6 +4,7 @@ import (
 	"fmt"
 	cmap "github.com/orcaman/concurrent-map/v2"
 	"github.com/tebeka/selenium"
+	"log"
 	"net/http"
 	"time"
 )
@@ -22,6 +23,7 @@ func Parse(driver selenium.WebDriver, pages Pages) {
 			if orders, err = page.parse(driver); err != nil {
 				println(err) // todo log
 			}
+			log.Println("Parsed all pages")
 			ordersByPageHandle.Set(page.handle, orders)
 		}
 		time.Sleep(time.Duration(3) * time.Second)
@@ -29,15 +31,11 @@ func Parse(driver selenium.WebDriver, pages Pages) {
 }
 
 func main() {
+	log.Println("Started parser")
 	ordersByPageHandle = cmap.New[Orders]()
 	handlesByProvider = make(map[string][]string)
-	service, driver := initSelenium()
-	defer func(service *selenium.Service) {
-		err := service.Stop()
-		if err != nil {
-			panic(err) // its prob dangerous but whatever
-		}
-	}(service)
+	driver := initSelenium()
+	log.Println("Initialized selenium")
 	pages, err := initProviders(driver, Providers{
 		Binance{currencies: config.currencies},
 		Garantex{currencies: config.currencies},

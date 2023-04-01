@@ -2,29 +2,40 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/tebeka/selenium"
 	"github.com/tebeka/selenium/chrome"
+	"log"
+	"time"
 )
 
-func initSelenium() (service *selenium.Service, driver selenium.WebDriver) {
-	service, err := selenium.NewChromeDriverService(config.chromeDriverPath, 4444)
+func getRemote() (driver selenium.WebDriver, err error) {
+	sleep := time.Duration(1) * time.Second
+	attempts := 5
+	for i := 0; i < attempts; i++ {
+		if i > 0 {
+			log.Println("retrying after error:", err)
+			time.Sleep(sleep)
+			sleep *= 2
+		}
+		caps := selenium.Capabilities{}
+		caps.AddChrome(chrome.Capabilities{Args: config.chromeArgs})
+		driver, err = selenium.NewRemote(caps, config.chromeUrlPrefix)
+		if err == nil {
+			return
+		}
+	}
+	err = fmt.Errorf("after %d attempts, last error: %s", attempts, err)
+	return
+}
+func initSelenium() (driver selenium.WebDriver) {
+	driver, err := getRemote()
 	if err != nil {
 		panic(err)
 	}
-
-	caps := selenium.Capabilities{}
-	args := []string{
-		"window-size=1920x1080",
-		"--no-sandbox",
-		"--disable-dev-shm-usage",
-		"disable-gpu",
+	if err = driver.ResizeWindow("", 1920, 1080); err != nil {
+		panic(err)
 	}
-	if config.headless {
-		args = append(args, "--headless")
-	}
-	caps.AddChrome(chrome.Capabilities{Args: args})
-	driver, err = selenium.NewRemote(caps, "")
-	err = driver.ResizeWindow("", 1920, 1080)
 	return
 }
 func contains(s []string, e string) bool {
