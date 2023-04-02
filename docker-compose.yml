@@ -2,6 +2,7 @@ version: '3.8'
 services:
   parser:
     container_name: parser
+    hostname: parser
     build:
       context: parser
       dockerfile: Dockerfile
@@ -11,6 +12,15 @@ services:
       - web
     depends_on:
       - chrome
+  analyzer:
+    container_name: analyzer
+    build:
+      context: analytics
+      dockerfile: Dockerfile
+    networks:
+      - web
+    depends_on:
+      - parser
   chrome:
     image: selenium/standalone-chrome:latest
     hostname: chrome

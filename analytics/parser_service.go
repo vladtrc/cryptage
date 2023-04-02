@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
@@ -25,13 +26,24 @@ type ProvidersWeb []ProviderWeb
 
 var parserClient = &http.Client{Timeout: 10 * time.Second}
 
-func getJson(url string, target interface{}) error {
-	r, err := parserClient.Get(url)
-	if err != nil {
-		return err
+func getJson(url string, target interface{}) (err error) {
+	sleep := time.Duration(10) * time.Second
+	for attempts := 5; attempts != 0; attempts-- {
+		if err != nil {
+			log.Println("retrying after error:", err)
+			time.Sleep(sleep)
+			sleep *= 2
+		}
+		var r *http.Response
+		r, err = parserClient.Get(url)
+		if err != nil {
+			continue
+		}
+		defer r.Body.Close()
+		return json.NewDecoder(r.Body).Decode(target)
 	}
-	defer r.Body.Close()
-	return json.NewDecoder(r.Body).Decode(target)
+	err = fmt.Errorf("last error: %s", err)
+	return
 }
 func getProviders() (providers ProvidersWeb, err error) {
 	err = getJson(config.parserURL+"/providers", &providers)
