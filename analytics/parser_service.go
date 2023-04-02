@@ -19,7 +19,7 @@ type OrderPageWeb struct {
 type OrdersWeb = []OrderPageWeb
 type ProviderWeb struct {
 	Provider string   `json:"provider"`
-	Tokens   []string `json:"currencies"`
+	Tokens   []string `json:"tokens"`
 }
 type ProvidersWeb []ProviderWeb
 
