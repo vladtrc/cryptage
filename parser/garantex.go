@@ -1,13 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"github.com/tebeka/selenium"
-	"strings"
 )
 
 type Garantex struct {
-	currencies []string
+	tokens []string
 }
 
 func (g Garantex) name() string {
@@ -15,35 +13,35 @@ func (g Garantex) name() string {
 }
 
 type OrderCurrency struct {
-	string
+	tokens []string
 }
 
 func (c OrderCurrency) GarantexParse(driver selenium.WebDriver) (res Orders, err error) {
 	for _, orderType := range []OrderType{Sell, Buy} {
-		var orders Orders
-		if orders, err = GarantexParsePage(driver, orderType, c.string); err != nil {
-			return
+		for _, token := range c.tokens {
+			var orders Orders
+			if orders, err = GarantexParsePage(driver, orderType, token); err != nil {
+				return
+			}
+			res = append(res, orders...)
 		}
-		res = append(res, orders...)
 	}
 	return
 }
 
 func (g Garantex) init(driver selenium.WebDriver) (res Pages, err error) {
-	urlTemplate := "https://garantex.io/trading/%srub?lang=en"
-	for _, currency := range g.currencies {
-		var handle string
-		if handle, err = createNewTabAndSetCurrent(driver); err != nil {
-			return
-		}
-		if err = driver.Get(fmt.Sprintf(urlTemplate, strings.ToLower(currency))); err != nil {
-			return
-		}
-		page := Page{
-			handle: handle,
-			parse:  OrderCurrency{currency}.GarantexParse,
-		}
-		res = append(res, page)
+	urlTemplate := "https://garantex.io/trading/usdtrub?lang=en"
+	var handle string
+	if handle, err = createNewTabAndSetCurrent(driver); err != nil {
+		return
 	}
+	if err = driver.Get(urlTemplate); err != nil {
+		return
+	}
+	page := Page{
+		handle: handle,
+		parse:  OrderCurrency{g.tokens}.GarantexParse,
+	}
+	res = append(res, page)
 	return
 }

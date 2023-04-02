@@ -25,7 +25,7 @@ func (c ByValueCondition) checkButtonVisibility(driver selenium.WebDriver) (res 
 }
 func prepareBinancePage(driver selenium.WebDriver) (err error) {
 	acceptAllCookiesXPath := "//button[text()='Accept All Cookies']"
-	if err = driver.WaitWithTimeout(ByValueCondition{by: selenium.ByXPATH, value: acceptAllCookiesXPath, expected: true}.checkButtonVisibility, time.Duration(10)*time.Second); err != nil {
+	if err = driver.WaitWithTimeout(ByValueCondition{by: selenium.ByXPATH, value: acceptAllCookiesXPath, expected: true}.checkButtonVisibility, time.Duration(1)*time.Second); err != nil {
 		log.Printf("could not wait until the accept cookies button: %s", err)
 	}
 	err = xpathForeach(driver, acceptAllCookiesXPath, func(e selenium.WebElement) (err error) {

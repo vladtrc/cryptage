@@ -6,7 +6,7 @@ import (
 )
 
 type Binance struct {
-	currencies []string
+	tokens []string
 }
 
 func (b Binance) name() string {
@@ -35,7 +35,7 @@ func (b Binance) init(driver selenium.WebDriver) (res Pages, err error) {
 		Buy:  "https://p2p.binance.com/en/trade/all-payments/%s?fiat=RUB",
 	}
 	for _, orderType := range []OrderType{Sell, Buy} {
-		for _, currency := range b.currencies {
+		for _, currency := range b.tokens {
 			url := fmt.Sprintf(orderTypeTemplates[orderType], currency)
 			var handle string
 			if handle, err = createNewTabAndSetCurrent(driver); err != nil {

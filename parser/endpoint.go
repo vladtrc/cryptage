@@ -19,7 +19,7 @@ type OrderPageWeb struct {
 type OrdersPageWeb []OrderPageWeb
 type ProviderWeb struct {
 	Provider   string   `json:"provider"`
-	Currencies []string `json:"currencies"`
+	Currencies []string `json:"tokens"`
 }
 type ProvidersWeb []ProviderWeb
 
@@ -37,7 +37,7 @@ func GetProviders(w http.ResponseWriter) {
 	for provider, _ := range handlesByProvider {
 		providers = append(providers, provider)
 	}
-	currencies := config.currencies
+	currencies := config.tokens
 	var res ProvidersWeb
 	for _, p := range providers {
 		res = append(res, ProviderWeb{
