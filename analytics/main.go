@@ -30,6 +30,6 @@ func main() {
 	time.Sleep(time.Duration(10) * time.Second)
 	for {
 		AnalyzeData()
-		time.Sleep(time.Duration(5) * time.Second)
+		time.Sleep(time.Duration(20) * time.Second)
 	}
 }

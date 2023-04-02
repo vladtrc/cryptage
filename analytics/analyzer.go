@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 )
 
@@ -57,33 +58,41 @@ func filterOrders(filter OrderFilter) (orders []FullOrderInfo) {
 	return
 }
 
+func FormatReportMessage(sellOrder, buyOrder FullOrderInfo) string {
+	return fmt.Sprintf(
+		"! %s, coeff: %f percent\nBUY %f\n%s\n%s\n%s\n%s\n%s\n%s\n\nSELL %f\n%s\n%s\n%s\n%s\n%s\n%s\n",
+		sellOrder.token,
+		(buyOrder.order.price/sellOrder.order.price-1)*100,
+
+		sellOrder.order.price,
+		sellOrder.provider,
+		sellOrder.order.advertiser,
+		sellOrder.order.available,
+		sellOrder.order.commission,
+		sellOrder.order.payment,
+		sellOrder.order.timestamp.Format("2006-01-02 15:04:05"),
+
+		buyOrder.order.price,
+		buyOrder.provider,
+		buyOrder.order.advertiser,
+		buyOrder.order.available,
+		buyOrder.order.commission,
+		buyOrder.order.payment,
+		buyOrder.order.timestamp.Format("2006-01-02 15:04:05"),
+	)
+}
 func AnalyzeData() {
-	buyOrders := filterOrders(OrderFilter{op: "Buy"})
-	for _, buyOrder := range buyOrders {
+	minThresholdPercent := 1.5
+	minThresholdCoeff := 1 + minThresholdPercent/100
+	for _, buyOrder := range filterOrders(OrderFilter{op: "Buy"}) {
 		providers := getProvidersWithSameToken(buyOrder.token)
-		sellOrders := filterOrders(OrderFilter{op: "Sell", providers: providers})
-		for _, sellOrder := range sellOrders {
-			if sellOrder.order.price < buyOrder.order.price {
-				log.Printf(
-					"! %s\nBUY %f\n%s\n%s\n%s\n%s\n%s\n%s\n\nSELL %f\n%s\n%s\n%s\n%s\n%s\n%s\n",
-					sellOrder.token,
-
-					sellOrder.order.price,
-					sellOrder.provider,
-					sellOrder.order.advertiser,
-					sellOrder.order.available,
-					sellOrder.order.commission,
-					sellOrder.order.payment,
-					sellOrder.order.timestamp.Format("2006-01-02 15:04:05"),
-
-					buyOrder.order.price,
-					buyOrder.provider,
-					buyOrder.order.advertiser,
-					buyOrder.order.available,
-					buyOrder.order.commission,
-					buyOrder.order.payment,
-					buyOrder.order.timestamp.Format("2006-01-02 15:04:05"),
-				)
+		for _, sellOrder := range filterOrders(OrderFilter{op: "Sell", providers: providers}) {
+			if sellOrder.order.price*minThresholdCoeff < buyOrder.order.price {
+				message := FormatReportMessage(sellOrder, buyOrder)
+				err := TgBotBroadcast(message)
+				if err != nil {
+					log.Printf("could not notify with tg bot: %s", err)
+				}
 			}
 		}
 	}

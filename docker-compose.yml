@@ -12,6 +12,18 @@ services:
       - web
     depends_on:
       - chrome
+  tg_bot:
+    container_name: tgbot
+    hostname: tgbot
+    build:
+      context: tgbot
+      dockerfile: Dockerfile
+    ports:
+      - "9095:9095"
+    networks:
+      - web
+    volumes:
+      - ./tgbot/.docker-temp:/etc/tgbot
   analyzer:
     container_name: analyzer
     build:
@@ -21,6 +33,7 @@ services:
       - web
     depends_on:
       - parser
+      - tg_bot
   chrome:
     image: selenium/standalone-chrome:latest
     hostname: chrome

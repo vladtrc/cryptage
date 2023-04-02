@@ -23,7 +23,7 @@ var dockerConfig = Config{
 	port:          "9090",
 	tokens: []string{
 		"USDT",
-		"BTC",
+		//"BTC",
 		"ETH",
 	},
 }
