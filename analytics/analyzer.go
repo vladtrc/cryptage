@@ -58,32 +58,28 @@ func filterOrders(filter OrderFilter) (orders []FullOrderInfo) {
 	return
 }
 
+func FormatOrder(order Order) string {
+	return fmt.Sprintf(
+		"%.2f\nПокупатель %s\nДоступно %s\nКомиссия %s\nОплата %s\n%s",
+		order.price,
+		order.advertiser,
+		order.available,
+		order.commission,
+		order.payment,
+		order.timestamp.Format("2006-01-02 15:04:05"),
+	)
+}
 func FormatReportMessage(sellOrder, buyOrder FullOrderInfo) string {
 	return fmt.Sprintf(
-		"! %s, coeff: %f percent\nBUY %f\n%s\n%s\n%s\n%s\n%s\n%s\n\nSELL %f\n%s\n%s\n%s\n%s\n%s\n%s\n",
+		"%s/RUB:\n\n%s продажа:%s\n\n%s покупка:%s\n\nПрофит:%.2f percent",
 		sellOrder.token,
+		sellOrder.provider, FormatOrder(sellOrder.order),
+		buyOrder.provider, FormatOrder(buyOrder.order),
 		(buyOrder.order.price/sellOrder.order.price-1)*100,
-
-		sellOrder.order.price,
-		sellOrder.provider,
-		sellOrder.order.advertiser,
-		sellOrder.order.available,
-		sellOrder.order.commission,
-		sellOrder.order.payment,
-		sellOrder.order.timestamp.Format("2006-01-02 15:04:05"),
-
-		buyOrder.order.price,
-		buyOrder.provider,
-		buyOrder.order.advertiser,
-		buyOrder.order.available,
-		buyOrder.order.commission,
-		buyOrder.order.payment,
-		buyOrder.order.timestamp.Format("2006-01-02 15:04:05"),
 	)
 }
 func AnalyzeData() {
-	minThresholdPercent := 1.5
-	minThresholdCoeff := 1 + minThresholdPercent/100
+	minThresholdCoeff := 1 + config.minThresholdPercent/100
 	for _, buyOrder := range filterOrders(OrderFilter{op: "Buy"}) {
 		providers := getProvidersWithSameToken(buyOrder.token)
 		for _, sellOrder := range filterOrders(OrderFilter{op: "Sell", providers: providers}) {
