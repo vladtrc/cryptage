@@ -79,7 +79,7 @@ func UpdateData() {
 				if orders == nil {
 					continue
 				}
-				m.Set(op, getBestDeal(orders, op == "Sell")) // find
+				m.Set(op, getBestDeal(orders, op == "Sell"))
 			}
 		}
 	}

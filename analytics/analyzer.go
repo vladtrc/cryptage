@@ -71,7 +71,7 @@ func FormatOrder(order Order) string {
 }
 func FormatReportMessage(sellOrder, buyOrder FullOrderInfo) string {
 	return fmt.Sprintf(
-		"%s/RUB:\n\n%s продажа:%s\n\n%s покупка:%s\n\nПрофит:%.2f percent",
+		"%s/RUB:\n\n%s мы покупаем:%s\n\n%s мы продаём:%s\n\nПрофит:%.2f percent",
 		sellOrder.token,
 		sellOrder.provider, FormatOrder(sellOrder.order),
 		buyOrder.provider, FormatOrder(buyOrder.order),
@@ -80,9 +80,11 @@ func FormatReportMessage(sellOrder, buyOrder FullOrderInfo) string {
 }
 func AnalyzeData() {
 	minThresholdCoeff := 1 + config.minThresholdPercent/100
-	for _, buyOrder := range filterOrders(OrderFilter{op: "Buy"}) {
-		providers := getProvidersWithSameToken(buyOrder.token)
-		for _, sellOrder := range filterOrders(OrderFilter{op: "Sell", providers: providers}) {
+	// смотри где нам могут продать
+	for _, sellOrder := range filterOrders(OrderFilter{op: "Sell"}) {
+		providers := getProvidersWithSameToken(sellOrder.token)
+		// смотрим кто может его купить дороже
+		for _, buyOrder := range filterOrders(OrderFilter{op: "Buy", providers: providers}) {
 			if sellOrder.order.price*minThresholdCoeff < buyOrder.order.price {
 				message := FormatReportMessage(sellOrder, buyOrder)
 				err := TgBotBroadcast(message)
